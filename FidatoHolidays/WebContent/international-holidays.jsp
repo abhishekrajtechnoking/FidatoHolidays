@@ -3,7 +3,8 @@
 
 
 <head>
-   <?php include("include/head_css.php"); ?>
+<%@include file="include/head_css.jsp" %>
+   
 </head>
 
 <body>
