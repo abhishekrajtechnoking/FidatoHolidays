@@ -1,5 +1,6 @@
 
 <%@include file="config.jsp" %>
+<%@include file="../jdbc/connection.jsp" %>
 
  <header id="main-header" style="background: navy;">
             <div class="header-top">
@@ -40,63 +41,79 @@
             <div class="container">
                 <div class="nav">
                     <ul class="slimmenu" id="slimmenu">
-                        <li class="active"><a href="index.php">Home</a></li>
+                        <li class="active"><a href="index.jsp">Home</a></li>
                         <li><a href="#">Domestic Holidays</a>
                             <ul>
-                                <?php
-                                    $qry1= mysql_query("SELECT `state_city` FROM `package_holidays` where `destination_type`='Domestic' group by `state_city`");
-                   
-                                    while ( $row1 = mysql_fetch_assoc($qry1)){ 
+                            
+                            	<%
+                            	String domstHol="";
+                            		PreparedStatement ps1=con.prepareStatement("SELECT STATE_CITY FROM PACKAGE_HOLIDAYS WHERE DESTINATION_TYPE='Domestic' GROUP BY STATE_CITY");
+                            		ResultSet rs1=ps1.executeQuery();
+                            		 while(rs1.next()){
+                            			domstHol=rs1.getString(1);
+                            				
+                            		
+                            	%>
                                
-                                 ?>
-                                <li><a href="domestic-holidays.php?dom_dest=<?php echo $row1['state_city'];?>"><?php echo $row1['state_city'];?></a></li>
-                                 <?php  }  ?>
+                                <li><a href="domestic-holidays.jsp?dom_dest=<%=rs1.getString(1)%>"><%=rs1.getString(1)%></a></li>
+                                                                <% } 
+                            		
+                                 %>
                             </ul>
                         </li>
                         <li><a href="#">International Holidays</a>
                             <ul>
-                                <?php
-                                    $qry3= mysql_query("SELECT `state_city` FROM `package_holidays` where `destination_type`='International' group by `state_city`");
-                   
-                                    while ( $row3 = mysql_fetch_assoc($qry3)){ 
+                            
+                            	<%
+                            		PreparedStatement ps2=con.prepareStatement("SELECT STATE_CITY FROM PACKAGE_HOLIDAYS WHERE DESTINATION_TYPE='International' GROUP BY STATE_CITY");
+                            		ResultSet rs2=ps2.executeQuery();
+                            		 while(rs2.next()){
+                            		
+                            	%>
+                                
                                
-                                 ?>
-                                <li><a href="international-holidays.php?int_dest=<?php echo $row3['state_city'];?>"><?php echo $row3['state_city'];?></a></li>
-                                 <?php  }  ?>
+                                
+                                <li><a href="international-holidays.jsp?int_dest=<%=rs2.getString(1) %>"><%=rs2.getString(1) %></a></li>
+                                 <% }%>
                                 
                             </ul>
                         </li>
                         <li><a href="#">Theme Holidays</a>
                             <ul>
-                                <?php
-                                    $qry2= mysql_query("SELECT `pcategory` FROM `package_holidays` group by `pcategory`");
-                   
-                            while ( $row2 = mysql_fetch_assoc($qry2)){ 
-                               
-                                 ?>
-                                <li><a href="package-by-theme.php?theme=<?php echo $row2['pcategory'];?>"><?php echo $row2['pcategory'];?></a></li>
-                                 <?php  }  ?>
+                            
+                            	<%
+                            		PreparedStatement ps3=con.prepareStatement("SELECT pcategory FROM PACKAGE_HOLIDAYS GROUP BY pcategory");
+                            		ResultSet rs3=ps3.executeQuery();
+                            		 while(rs3.next()){
+                            		
+                            	%>
+                                
+                                <li><a href="package-by-theme.jsp?theme=<%=rs3.getString(1) %>"><%=rs3.getString(1) %></a></li>
+                                 <% }%>
                             </ul>
                         </li>
                        <li><a href="#">Popular Destinations</a>
                             <ul>
-                                <?php
-                                    $qry4= mysql_query("SELECT `destination` FROM `package_holidays` group by `destination` limit 10");
-                   
-                            while ( $row4 = mysql_fetch_assoc($qry4)){ 
-                                $destination=$row4['destination'];
-                			   //echo $destination;
-                			   $qrydestid=mysql_query("SELECT `destinations` FROM `package_destinations` where `areaid`='$destination'");
-                			   $qrydestination=mysql_fetch_assoc($qrydestid);
-                               
-                                 ?>
-                                <li><a href="popular-destinations.php?destination=<?php echo $destination;?>"><?php echo $qrydestination['destinations'];?></a></li>
-                                 <?php  }  ?>
+                            	
+                            	<%
+                            		PreparedStatement ps4=con.prepareStatement("SELECT destination FROM PACKAGE_HOLIDAYS GROUP BY destination limit 10");
+                            		ResultSet rs4=ps4.executeQuery();
+                            		 while(rs4.next()){
+                            			 String destn=rs4.getString(1);
+                            			 PreparedStatement ps5=con.prepareStatement("SELECT destinations FROM package_destinations where areaid='"+destn+"'");
+                                 		ResultSet rs5=ps5.executeQuery();
+                                 		while(rs5.next()){
+                                 		rs5.getString(1);
+                                 		
+                            	%>
+                            	
+                                  <li><a href="popular-destinations.jsp?destination=<%=destn%>"><%=rs5.getString(1)%></a></li>
+                                <%}} %>
                             </ul>
                         </li>
                                  <li><a href="#">Hot Deals</a>
                                     <ul>
-                                        <li><a href="fidato-packages.php">All Package on EMI</a>
+                                        <li><a href="fidato-packages.jsp">All Package on EMI</a>
                                         </li>
                                        
                                     </ul>

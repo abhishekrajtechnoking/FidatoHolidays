@@ -3,6 +3,7 @@
 
 
 <head>
+	<%@include file="include/head_css.jsp" %>
    <?php include("include/head_css.php");
    $orderid=$_GET['orderid'];
    

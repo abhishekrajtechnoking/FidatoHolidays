@@ -3,10 +3,12 @@
 
 
 <head>
-    <?php include("include/head_css.php");
+    <%@include file="include/head_css.jsp" %>
     
-    $pid=$_GET['pid'];
-    ?>
+    <%
+    	String pid=request.getParameter("pid");
+    %>
+    
 </head>
 
 <body>
@@ -25,16 +27,22 @@
     </script>
     <!-- /FACEBOOK WIDGET -->
     <div class="global-wrap" style="background:#eee;">
-         <?php include("include/header_main.php"); ?>
+         <%@include file="include/header_main.jsp" %>
+         
+         <%
+         PreparedStatement ps7=con.prepareStatement("SELECT * FROM PACKAGE_HOLIDAYS WHERE  package_id='"+pid+"'");
+ 		   ResultSet rs7=ps7.executeQuery();
+ 		   String destination="";
+ 		   while(rs7.next()){
+ 			   destination=rs7.getString("destination");
+ 			   
+ 			  PreparedStatement ps8=con.prepareStatement("SELECT * FROM package_destinations WHERE  areaid='"+destination+"'");
+ 	 		   ResultSet rs8=ps8.executeQuery();
+ 	 		   while(rs8.next()){
+ 		   
+         %>
 
-            <?php $qry1=mysql_query("SELECT * FROM `package_holidays` where `package_id`='$pid'");
-										    
-			   $result1=mysql_fetch_assoc($qry1);
-			   $destination=$result1['destination'];
-			   //echo $destination;
-			   $qrydestid=mysql_query("SELECT * FROM `package_destinations` where `areaid`='$destination'");
-			   $qrydestination=mysql_fetch_assoc($qrydestid);
-			    ?>
+         
 
 
         <div class="container" style="
@@ -46,32 +54,32 @@
                                     transition: all .2s ease-in-out;
                                     margin-bottom: 20px;">
             <ul class="breadcrumb">
-                 <li><a href="index.php">Home</a>
+                 <li><a href="index.jsp">Home</a>
                 </li>
                 
                 <li><a href="#">Holiday Packages</a>
                 </li>
-                <li class="active">Package for <?php echo $qrydestination['destinations'];?> </li>
+                <li class="active">Package for <%=rs8.getString("destinations") %> </li>
             </ul>
             <div class="booking-item-details">
                 <header class="booking-item-header">
                     <div class="row">
                         <div class="col-md-7">
-                            <h2 class="lh1em"><?php echo $result1['pname'];?> (<?php echo $result1['days'];?> D/ <?php echo $result1['nights'];?> N)</h2>
-                            <p class="lh1em text-small"><i class="fa fa-map-marker"></i> <?php echo $qrydestination['destinations'];?> (<?php echo $result1['state_city'];?>, <?php echo $result1['country'];?>)</p>
+                            <h2 class="lh1em"><%=rs7.getString("pname") %> (<%=rs7.getString("days") %> D/ <%=rs7.getString("nights") %> N)</h2>
+                            <p class="lh1em text-small"><i class="fa fa-map-marker"></i> <%=rs8.getString("destinations") %> (<%=rs7.getString("state_city") %>, <%=rs7.getString("country") %>)</p>
                            
                         </div>
                         <div class="col-md-3">
-                            <p class="booking-item-header-price"><h2 class="lh1em">&#8377; <?php echo $result1['price'];?></h2><small class="text-smaller">
+                            <p class="booking-item-header-price"><h2 class="lh1em">&#8377; <%=rs7.getString("price") %></h2><small class="text-smaller">
                         <p>Price Per Adult Twin Sharing Basis</p></small></p>
                         </div>
                          <div class="col-md-2">
-                           <a href="#search-dialog<?php echo $result1['package_id']; ?>" class="popup-text btn btn-primary btn-lg">Book Now</a>
+                           <a href="#search-dialog<%=rs7.getString("package_id") %>" class="popup-text btn btn-primary btn-lg">Book Now</a>
                         
                         <!---------Booking lightbox---------->
-                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<?php echo $result1['package_id']; ?>">
-                                <h5>Book your selected package- <b> <?php echo $result1['pname']; ?> (<?php echo $result1['days']; ?>D/<?php echo $result1['nights']; ?>N)</b></h5>
-                                <form action="package_booking.php" method="POST">
+                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<%=rs7.getString("package_id") %>">
+                                <h5>Book your selected package- <b> <%=rs7.getString("pname") %> (<%=rs7.getString("days") %>D/<%=rs7.getString("nights") %>N)</b></h5>
+                                <form action="success-payment.jsp" method="POST">
                                     <div class="input-daterange" data-date-format="MM d, D">
                                         <div class="row">
                                             <div class="col-md-12">
@@ -104,8 +112,8 @@
                                                     <input class="form-control" name="start" required type="text" />
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="orderid" value="<?php echo $result1['package_id'];?>">
-                                             <input type="hidden" name="amount" value="<?php echo $result1['price'];?>">
+                                            <input type="hidden" name="orderid" value="<%=rs7.getString("package_id") %>">
+                                             <input type="hidden" name="amount" value="<%=rs7.getString("price") %>">
                                                              
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-lg form-group-icon-left">
@@ -118,6 +126,7 @@
                                     <button class="btn btn-primary btn-lg" type="submit">Proceed to Book</button>
                                 </form>
                             </div>
+                            
                             <!---------Booking lightbox-end--------->
                             
                             </div>
@@ -133,37 +142,45 @@
                                 </li>
                             </ul>
                             <div class="tab-content">
-                                 <?php
-                               
-                               $qry4=mysql_query("SELECT * FROM `package_images` where `package_id`='$pid'");
-							   $result4=mysql_fetch_assoc($qry4);
-							   $packageid=$result4['package_id'];
-			                  
-                               if($packageid=="" || $packageid=="NULL"){
-                               ?>
+                            
+                            	<%
+                            		PreparedStatement ps9=con.prepareStatement("SELECT * FROM package_images WHERE package_id='"+pid+"'");
+                            		ResultSet rs9=ps9.executeQuery();
+                            		String packageId="";
+                            		
+                            		if(packageId=="" || packageId=="null"){
+                            			
+                            		
+                            		
+                            	%>
+                            	
                                  <div class="tab-pane fade in active" id="tab-1">
                                     <!-- START LIGHTBOX GALLERY -->
                                     <div class="row row-no-gutter" id="popup-gallery">
                                         <div class="col-md-12">
-                                            <a class="hover-img popup-gallery-image" href="dms/package_image/<?php echo $result1['image']; ?>" data-effect="mfp-zoom-out">
-                                                <img src="dms/package_image/<?php echo $result1['image']; ?>" alt="<?php echo $result1['pname'];?>" title="<?php echo $result1['pname'];?>" /><i class="fa fa-plus round box-icon-small hover-icon i round"></i>
+                                            <a class="hover-img popup-gallery-image" href="dms/package_image/<%=rs7.getString("image") %>" data-effect="mfp-zoom-out">
+                                                <img src="dms/package_image/<%=rs7.getString("image") %>" alt="<%=rs7.getString("pname") %>" title="<%=rs7.getString("pname") %>" /><i class="fa fa-plus round box-icon-small hover-icon i round"></i>
                                             </a>
                                         </div>
                                         
                                     </div>
                                     <!-- END LIGHTBOX GALLERY -->
                                 </div>
-                                <?php } else{?>
+                                <%}else{ %>
                                 <div class="tab-pane fade in active" id="tab-1">
                                     <div class="fotorama" data-allowfullscreen="true" data-nav="thumbs">
-                                        <?php 
-                                        while($result4=mysql_fetch_assoc($qry4)){
-                                        ?>
-                                        <img src="dms/dist/sightseeing_images/<?php echo $result4['image_name'];?>" />
-                                        <?php } ?>
+                                        
+                                        <%
+                                        while(rs9.next()){
+                                			packageId=rs9.getString("package_id");
+                                		
+                                        %>
+                                        
+                                        <img src="dms/dist/sightseeing_images/<%=rs9.getString("image_name") %>" />
+                                       <%} %>
                                     </div>
                                 </div>
-                                <?php } ?>
+                                <%} %>
                                 <div class="tab-pane fade" id="google-map-tab">
                                     <div id="map-canvas" style="width:100%; height:500px;"></div>
                                 </div>
@@ -172,30 +189,32 @@
                     </div>
                     <div class="col-md-4">
                         <div class="booking-item-dates-change" style="margin-top: 42px;">
-                            <?php
-                             
-                               
-                               $A=$result1['price'];
-                               $U=$A*20/100;
-                               $P=round($A-$U);
-                               $R="2";
-                               $N="15";
-                               
-                              /*-------EMI = [P x R x (1+R)^N]/[(1+R)^N-1] EMI= [2,00,000 x 1.66/100 x (1+1.66/100) ^ 24 / [(1+1.66/100) ^ 24 - 1)----*/
-                              
-                               $emi=round(($P*$R*(1+$R/100)^$N)/((1+$R/100)^$N-1));
-                               
-                			   
-                            ?>
+                            
+                            <%
+                            String dest="";
+            				double A=0.0;
+            				double U=0.0;
+            				long P=0;
+            				int R=2;
+            				int N=15;
+            				
+            			   dest=rs7.getString("destination");
+          				   A=rs7.getDouble("price");
+          				   U=A*20/100;
+          				   P=Math.round(A-U);
+          				   
+          				   long emi=Math.round(P*R*(1+R/100)^N)/((1+R/100)^N-1);
+                            %>
+                        
                             <h2 class="lh1em mt40"><span style="background-color: #000; color: #fff; display: inline-block; margin-right: 3px; padding: 2px 5px;">EMI</span>
-                            <span class="booking-item-rating-number"><small class="text-smaller">Start From</small><b> &#8377;<?php echo $emi; ?>*</b></span>
+                            <span class="booking-item-rating-number"><small class="text-smaller">Start From</small><b> &#8377;<%=emi %>*</b></span>
                             </h2>
                             <hr>
-                            <h5><small class="text-smaller">Package Theme:</small> <b><?php echo $result1['pcategory'];?></b></h5>
-                            <h5><small class="text-smaller">Package Includes:</small><br> <b><?php echo $result1['package_includes'];?></b></h5>
+                            <h5><small class="text-smaller">Package Theme:</small> <b><%=rs7.getString("pcategory") %></b></h5>
+                            <h5><small class="text-smaller">Package Includes:</small><br> <b><%=rs7.getString("package_includes") %></b></h5>
                             
                             <span class="booking-item-rating-number"><h4>About Package</h4><small class="text-smaller">
-                        <p><?php echo $result1['description'];?></p></small></span>
+                        <p><%=rs7.getString("description") %></p></small></span>
                         </div>
                         <br>
                         <div class="booking-item-dates-change">
@@ -209,7 +228,7 @@
                 <div class="row">
                    <div class="col-md-6">
                         <h4>About Itinerary</h4>
-                        <p><?php echo $result1['description'];?></p>
+                        <p><%=rs7.getString("description") %></p>
                     </div>
                 
                     <div class="col-md-3">
@@ -250,17 +269,21 @@
                    
                     <div class="col-md-12">
                         <ul class="booking-item-reviews list">
-                             <?php
-										    $qry2=mysql_query("SELECT * FROM `package_itinerary` where `package_id`='$pid'");
-										    
-										    while($result2=mysql_fetch_assoc($qry2)){
-										    ?>
+                        
+                        	<%
+                        		PreparedStatement ps10=con.prepareStatement("SELECT * FROM package_itinerary where package_id='"+pid+"'");
+                        		ResultSet rs10=ps10.executeQuery();
+                        		while(rs10.next()){
+                        			
+                        		
+                        	%>
+                            
                             <li>
                                 <div class="row">
                                     <div class="col-md-2">
                                         
                                         <h2 class="lh1em mt5"><small class="text-smaller"  style="background-color: red; color: #fff; display: inline-block; padding: 5px 5px;">
-                        Day</small><span style="background-color: navy; color: #fff; display: inline-block; margin-right: 3px; padding: 5px 5px;"> <?php echo $result2['day_number'] ?></span>
+                        Day</small><span style="background-color: navy; color: #fff; display: inline-block; margin-right: 3px; padding: 5px 5px;"> <%=rs10.getString("day_number") %></span>
                             
                             </h2>
                                     </div>
@@ -268,7 +291,7 @@
                                         <div class="booking-item-review-content">
                                            <!-- <h5>"Tempus vestibulum mus imperdiet nibh sem"</h5>-->
                                             
-                                            <p><?php echo $result2['descriptions'] ?></p>
+                                            <p><%=rs10.getString("descriptions") %></p>
                                            
                                            
                                         </div>
@@ -279,26 +302,28 @@
                                        
                                     </div>
                                 </li>
-                            <?php } ?>
+                           <%} %>
                         </ul>
                         
                     </div>
                    
                 </div>
                  <div class="row">
-                     <?php
-										    $qry3=mysql_query("SELECT * FROM `package_terms` where `package_id`='$pid'");
-										    
-										   $result3=mysql_fetch_assoc($qry3)
-										    ?>
+                     
+                     <%
+                     		PreparedStatement ps11=con.prepareStatement("SELECT * FROM package_terms where package_id='"+pid+"'");
+                     		ResultSet rs11=ps11.executeQuery();
+                     		while(rs11.next()){
+                     %>
+                   
                    <div class="col-md-6">
                         <h4>Inclusions</h4><hr>
-                        <p><?php echo $result3['inclusions'] ?></p>
+                        <p><%=rs11.getString("inclusions") %></p>
                     </div>
                 
                     <div class="col-md-6">
                         <h4>Exclusions</h4><hr>
-                       <p><?php echo $result3['exclusions'] ?></p>
+                       <p><%=rs11.getString("exclusions") %></p>
                     </div>
                    
                 </div>
@@ -307,32 +332,33 @@
                                                         
                     <div class="col-md-6">
                         <h4 class="booking-item-title">Package Terms</h4><hr>
-                        	<p><?php echo $result3['package_terms'] ?></p>
+                        	<p><%=rs11.getString("package_terms") %></p>
                     </div>
                     <div class="col-md-6">
                         <h4 class="booking-item-title">Package Cancellation</h4><hr>
-                        	<p><?php echo $result3['cancelation_policy'] ?></p>
+                        	<p><%=rs11.getString("cancelation_policy") %>></p>
                     </div>
                     </div>
                     <h4>About Destination</h4>
                          
                             <div class="row" style="background: #eaf6f8;">
                                    <div class="form-group" style="padding:10px;">
-                                            <label> About <?php echo $qrydestination['destinations'];?></label>
+                                            <label> About <%=rs8.getString("destinations") %></label>
                                             <hr>
-                                            <p><?php echo $qrydestination['about_destinations'];?></p>
+                                            <p><%=rs8.getString("about_destinations") %></p>
                                         </div>
                                    </div>
                                
                 </div>
             </div>
+            <%}}} %>
             <div class="gap gap-small"></div>
             
         </div>
  
 
-
-      <?php include("include/footer.php");?>
+	<%@include file="include/footer.jsp" %>
+      
 </body>
 
 
