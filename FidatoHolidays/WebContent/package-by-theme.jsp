@@ -3,7 +3,8 @@
 
 
 <head>
-   <?php include("include/head_css.php"); ?>
+	<%@include file="include/head_css.jsp" %>
+   
 </head>
 
 <body>
@@ -22,22 +23,20 @@
     </script>
     <!-- /FACEBOOK WIDGET -->
     <div class="global-wrap" style="background:#eee;">
-        <?php include("include/header_main.php"); ?> 
-<?php
-$theme=$_GET['theme'];
-
-?>
-
-
+    <%@include file="include/header_main.jsp" %>
+       
+       <%
+       		String theme=request.getParameter("theme");
+       %>
 
 
         <div class="container">
             <ul class="breadcrumb" style="margin-left: 80px;">
-                <li><a href="index.php">Home</a>
+                <li><a href="index.jsp">Home</a>
                 </li>
                 <li><a href="#">Holidays</a>
                 </li>
-                <li class="active"><?php echo $theme ?></li>
+                <li class="active"><%=theme %></li>
             </ul>
             <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog">
                 <h3>Search for Activity</h3>
@@ -56,7 +55,7 @@ $theme=$_GET['theme'];
                     <button class="btn btn-primary btn-lg" type="submit">Search for Package</button>
                 </form>
             </div>
-            <h4 class="booking-title" style="margin-left: 80px;">Your package for selected holiday theme- <b><?php echo $theme ?></b> </h4>
+            <h4 class="booking-title" style="margin-left: 80px;">Your package for selected holiday theme- <b><%=theme %></b> </h4>
             <div class="row">
                
                 <div class="col-md-12">
@@ -64,28 +63,30 @@ $theme=$_GET['theme'];
                        
                     </div>
                     <ul class="booking-list">
-                           <?php
-                   $qry= mysql_query("Select * FROM package_holidays where pcategory='$theme'");
+                    <%
+                    	PreparedStatement psThm1=con.prepareStatement("SELECT * FROM package_holidays where pcategory='"+theme+"'");
+						ResultSet rsThm1=psThm1.executeQuery();
+	            		String dest="";
+	    				double A=0.0;
+	    				double U=0.0;
+	    				long P=0;
+	    				int R=2;
+	    				int N=15;
+            			while(rsThm1.next()){
+            				
+            			dest=rsThm1.getString("destination");
+         			    A=rsThm1.getDouble("price");
+         				U=A*20/100;
+         				P=Math.round(A-U);
+         			   
+         			   	long emi=Math.round(P*R*(1+R/100)^N)/((1+R/100)^N-1);
+         			   	
+            				PreparedStatement psThm2=con.prepareStatement("SELECT * FROM package_destinations where areaid='"+dest+"'");
+            				ResultSet rsThm2=psThm2.executeQuery();
+            				while(rsThm2.next()){
+            			
+            		%>
                    
-                            while ( $row = mysql_fetch_assoc($qry)){ 
-                               $destination=$row['destination'];
-                               $A=$row['price'];
-                               $U=$A*20/100;
-                               $P=round($A-$U);
-                               $R="2";
-                               $N="15";
-                               
-                              /*-------EMI = [P x R x (1+R)^N]/[(1+R)^N-1] EMI= [2,00,000 x 1.66/100 x (1+1.66/100) ^ 24 / [(1+1.66/100) ^ 24 - 1)----*/
-                              
-                               $emi=round(($P*$R*(1+$R/100)^$N)/((1+$R/100)^$N-1));
-                               
-                			   //echo $destination;
-                			   $qrydestid=mysql_query("SELECT * FROM `package_destinations` where `areaid`='$destination'");
-                			   $qrydestination=mysql_fetch_assoc($qrydestid);
-                            
-                            
-                            
-                            ?>
                             
                     
                         <li >
@@ -100,26 +101,26 @@ $theme=$_GET['theme'];
                                                         transition: all .2s ease-in-out;
                                                         margin-bottom: 20px;">
                                     <div class="col-md-4" style="padding-left:0px;">
-                                        <img src="dms/package_image/<?php echo $row['image']; ?>" alt="" title=""  style=" border-top-left-radius: 5px; border-bottom-left-radius: 5px;"/>
+                                        <img src="dms/package_image/<%=rsThm1.getString("image")%>" alt="" title=""  style=" border-top-left-radius: 5px; border-bottom-left-radius: 5px;"/>
                                     </div>
                                     <div class="col-md-5" style="padding-top: 15px;">
                                         
-                                        <h5 class="booking-item-title"><b><?php echo $row['pname']; ?> (<?php echo $row['days']; ?>D/<?php echo $row['nights']; ?>N)</b></h5>
+                                        <h5 class="booking-item-title"><b><%=rsThm1.getString("pname")%> (<%=rsThm1.getString("days")%>D/<%=rsThm1.getString("nights")%>N)</b></h5>
                                         <div class="booking-item-rating">
                                             <ul class="icon-group booking-item-rating-stars">
                                                 <li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li>
                                             </ul><span class="booking-item-rating-number"><b >3.7</b> of 5</span><small></small>
                                         </div>
-                                        <p class="booking-item-address"><i class="fa fa-map-marker"></i> <?php echo $qrydestination['destinations']; ?></p>
-                                        <p class="booking-item-description">Package Includes: <?php echo $row['package_includes']; ?></p>
+                                        <p class="booking-item-address"><i class="fa fa-map-marker"></i> <%=rsThm2.getString("destinations")%></p>
+                                        <p class="booking-item-description">Package Includes: <%=rsThm1.getString("package_includes")%></p>
                                     </div>
                                     <div class="col-md-3" style="padding-top: 15px;">
                                         
-                                         <p><span class="booking-item-rating-number"><b >EMI</b> <small>starts from</small> &#8377;<?php echo $emi ?>*</span></p>
-                                        <p><span class="booking-item-price">&#8377;<?php echo $row['price']; ?></span><span>/pp*</span></p>
+                                         <p><span class="booking-item-rating-number"><b >EMI</b> <small>starts from</small> &#8377;<%=emi%>*</span></p>
+                                        <p><span class="booking-item-price">&#8377;<%=rsThm1.getString("price")%></span><span>/pp*</span></p>
                                         
-                                                 <p>        <a href="view-package.php?pid=<?php echo $row['package_id']; ?>"> <span class="btn btn-primary">View</span></a>  &nbsp;&nbsp;
-                                                         <a class="popup-text" href="#search-dialog<?php echo $row['package_id']; ?>" data-effect="mfp-zoom-out"><span class="btn btn-danger">Book</span></a>
+                                                 <p>        <a href="view-package.jsp?pid=<%=rsThm1.getString("package_id")%>"> <span class="btn btn-primary">View</span></a>  &nbsp;&nbsp;
+                                                         <a class="popup-text" href="#search-dialog<%=rsThm1.getString("package_id")%>" data-effect="mfp-zoom-out"><span class="btn btn-danger">Book</span></a>
                                     </p>
                                     </div>
                                 </div>
@@ -127,9 +128,9 @@ $theme=$_GET['theme'];
                         </li>
                         
                         <!---------Booking lightbox---------->
-                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<?php echo $row['package_id']; ?>">
-                                <h5>Book your selected package- <b> <?php echo $row['pname']; ?> (<?php echo $row['days']; ?>D/<?php echo $row['nights']; ?>N)</b></h5>
-                               <form action="package_booking.php" method="POST">
+                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<%=rsThm1.getString("package_id")%>">
+                                <h5>Book your selected package- <b> <%=rsThm1.getString("pname")%> <%=rsThm1.getString("days")%>D/<%=rsThm1.getString("nights")%>N)</b></h5>
+                               <form action="package_booking.jsp" method="POST">
                                     <div class="input-daterange" data-date-format="MM d, D">
                                         <div class="row">
                                             <div class="col-md-12">
@@ -162,8 +163,8 @@ $theme=$_GET['theme'];
                                                     <input class="form-control" name="start" required type="text" />
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="orderid" value="<?php echo $row['package_id'];?>">
-                                             <input type="hidden" name="amount" value="<?php echo $row['price'];?>">
+                                            <input type="hidden" name="orderid" value="<%=rsThm1.getString("package_id")%>">
+                                             <input type="hidden" name="amount" value="<%=rsThm1.getString("price")%>">
                                                              
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-lg form-group-icon-left">
@@ -177,17 +178,18 @@ $theme=$_GET['theme'];
                                 </form>
                             </div>
                             <!---------Booking lightbox-end--------->
-                        <?php  }  ?>
+                        <%}} %>
                        
                     </ul>
-                   <?php include("include/enquiry.php");?>
+                    <%@include file="include/enquiry.jsp" %>
+                  
                 </div>
             </div>
             <div class="gap"></div>
         </div>
 
-
- <?php include("include/footer.php");?>
+<%@include file="include/footer.jsp" %>
+ 
     </div>
 </body>
 

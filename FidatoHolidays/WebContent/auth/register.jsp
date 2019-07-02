@@ -24,46 +24,39 @@
 			
 			title=request.getParameter("title");
 			fName=request.getParameter("fname");
-			lName=request.getParameter("lName");
+			lName=request.getParameter("lname");
 			age=request.getParameter("age");
 			gndr=request.getParameter("gender");
-			mob=request.getParameter("mobile4");
+			mob=(String)session.getAttribute("mobSes");
+			System.out.println("register mob "+mob);
 			email=request.getParameter("mail");
 			password=request.getParameter("password");
 			
-			PreparedStatement ps1=con.prepareStatement("SELECT MOBILE,EMAIL FROM FID_REG");
+			PreparedStatement ps1=con.prepareStatement("SELECT * FROM fid_reg WHERE MOBILE='"+mob+"'");
 			ResultSet rs=ps1.executeQuery();
-			while(rs.next()){
-				mobRs=rs.getString(1);
-				emailRs=rs.getString(2);
-			}
-			
-			if(mobRs.equals(mob)){
-				response.sendRedirect("mobErr.jsp");
-				
-			}
-			else if(emailRs.equals(email)){
-				response.sendRedirect("mailErr.jsp");
-			}
-			else{
-				
-				PreparedStatement ps2=con.prepareStatement("INSERT INTO FID_REG VALUES(?,?,?,?,?,?,?,?)");
+			if(rs.next()==false){
+
+				PreparedStatement ps2=con.prepareStatement("INSERT INTO fid_reg VALUES(?,?,?,?,?,?)");
 				ps2.setString(1,title);
 				ps2.setString(2,fName);
 				ps2.setString(3,lName);
 				ps2.setString(4,mob);
 				ps2.setString(5,email);
-				ps2.setString(6,gndr);
-				ps2.setString(7,age);
-				ps2.setString(8,password);
-				
+				ps2.setString(6,password);
+			
 				int res=ps2.executeUpdate();
 				
-				if(res>0){
-					out.println("inserted");
-				}
+				PreparedStatement ps3=con.prepareStatement("UPDATE otp SET status=? where mobile='"+mob+"'");
+				ps3.setString(1,"1");
+				int res1=ps3.executeUpdate();
+				response.sendRedirect("../index.jsp");
+			
+			}
+			else{
+				response.sendRedirect("mobErr.jsp");
 				
 			}
+	
 		%>
 	
 </body>

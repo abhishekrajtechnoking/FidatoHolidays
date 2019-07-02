@@ -173,7 +173,7 @@
                                                 </div>
                                             </div>
                                             <input type="hidden" name="orderid" value="<%=rs5.getString("package_id")%>">
-                                             <input type="hidden" name="amount" value="<%=rs5.getString("package_id")%>">
+                                             <input type="hidden" name="amount" value="<%=rs5.getString("price")%>">
                                                              
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-lg form-group-icon-left">

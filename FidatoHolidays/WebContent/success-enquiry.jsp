@@ -3,10 +3,13 @@
 
 
 <head>
-   <?php include("include/head_css.php");
-   $orderid=$_GET['orderid'];
+	<%@include file="include/head_css.jsp" %>
+  
+   <%
+   		String ordId=request.getParameter("orderid");
+   %>
    
-   ?>
+  
 </head>
 
 <body>
@@ -25,29 +28,30 @@
     </script>
     <!-- /FACEBOOK WIDGET -->
     <div class="global-wrap">
-        <?php include("include/header_main.php"); ?> 
+    	<%@include file="include/header_main.jsp" %>
+         
 
         <div class="gap"></div>
+        
+        <%
+        	PreparedStatement psSucEnq=con.prepareStatement("SELECT * FROM user_enquiry where enq_no='"+ordId+"'");
+        	ResultSet rsSucEnq=psSucEnq.executeQuery();
+        	rsSucEnq.next();
+        %>
 
-<?php 
-$qry=mysql_query("SELECT * from `user_enquiry` where enq_no='$orderid'");
-$result=mysql_fetch_assoc($qry);
-
-
-?>
 
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <i class="fa fa-check round box-icon-large box-icon-center box-icon-success mb30"></i>	
-                    <h3 class="text-center">Hi <?php echo $result['fullname'];?>, your enquiry was sent to Fidato!</h3>
-                    <h5 class="text-center mb30">Enquiry details has been sent to <?php echo $result['email'];?></h5>
+                    <h3 class="text-center">Hi <%=rsSucEnq.getString("fullname") %>, your enquiry was sent to Fidato!</h3>
+                    <h5 class="text-center mb30">Enquiry details has been sent to <%=rsSucEnq.getString("email") %></h5>
                     <ul class="order-payment-list list mb30">
                         <li>
                             <div class="row">
                                 <div class="col-xs-9">
-                                    <h5>Subject: <?php echo $result['subject'];?></h5>
-                                    <p>Details: <?php echo $result['message'];?></p>
+                                    <h5>Subject: <%=rsSucEnq.getString("subject") %></h5>
+                                    <p>Details: <%=rsSucEnq.getString("message") %></p>
                                 </div>
                                
                             </div>
@@ -56,7 +60,7 @@ $result=mysql_fetch_assoc($qry);
                     </ul>
                     <!--<h4 class="text-center">You might also need in New York</h4>-->
                     <ul class="list list-inline list-center">
-                        <li><a class="btn btn-primary" href="index.php"><i class="fa fa-home"></i> Go to home</a>
+                        <li><a class="btn btn-primary" href="index.jsp"><i class="fa fa-home"></i> Go to home</a>
                             
                         </li>
                         <li><a class="btn btn-primary" href="#"><i class="fa fa-power-off"></i> Exit</a>
@@ -70,8 +74,8 @@ $result=mysql_fetch_assoc($qry);
         </div>
 
 
-
-      <?php include("include/footer.php");?>
+<%@include file="include/footer.jsp" %>
+   
     </div>
 </body>
 

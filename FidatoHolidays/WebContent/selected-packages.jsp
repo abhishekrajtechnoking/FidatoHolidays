@@ -3,7 +3,8 @@
 
 
 <head>
-   <?php include("include/head_css.php"); ?>
+	<%@include file="include/head_css.jsp" %>
+   
 </head>
 
 <body>
@@ -22,17 +23,14 @@
     </script>
     <!-- /FACEBOOK WIDGET -->
     <div class="global-wrap" style="background:#eee;">
-        <?php include("include/header_main.php"); ?> 
-<?php
-$destination=$_GET['destination'];
-?>
-
-
-
+    <%@include file="include/header_main.jsp" %>
+        <%
+        	String destination=request.getParameter("destination");
+        %>
 
         <div class="container">
             <ul class="breadcrumb">
-                <li><a href="index.php">Home</a>
+                <li><a href="index.jsp">Home</a>
                 </li>
                 <li><a href="#">India</a>
                 </li>
@@ -55,7 +53,7 @@ $destination=$_GET['destination'];
                     <button class="btn btn-primary btn-lg" type="submit">Search for Package</button>
                 </form>
             </div>
-            <h3 class="booking-title">Your Search List for <?php echo $destination; ?> Holidays with Fidato </h3>
+            <h3 class="booking-title">Your Search List for <%=destination %> Holidays with Fidato </h3>
             <div class="row">
                
                 <div class="col-md-12">
@@ -73,6 +71,30 @@ $destination=$_GET['destination'];
                         </ul>
                     </div>
                     <ul class="booking-list">
+                    
+                    <%
+                    		PreparedStatement psStPack1=con.prepareStatement("SELECT * FROM package_holidays where destination='"+destination+"'");
+                    		ResultSet rsStPack1=psStPack1.executeQuery();
+                    		double A=0.0;
+		    				double U=0.0;
+		    				long P=0;
+		    				int R=2;
+		    				int N=15;
+                    		while(rsStPack1.next()){
+                    			
+                    			String dest=rsStPack1.getString("destination");
+                    		    A=rsStPack1.getDouble("price");
+                  				U=A*20/100;
+                  				P=Math.round(A-U);
+                  			   
+                  			   	long emi=Math.round(P*R*(1+R/100)^N)/((1+R/100)^N-1);
+                  			   	
+                  			  PreparedStatement psStPack2=con.prepareStatement("SELECT * FROM package_destinations where areaid='"+dest+"'");
+                 				ResultSet rsStPack2=psStPack2.executeQuery();
+                 				rsStPack2.next();
+                    			
+                    		
+                    %>
                            <?php
                    $qry= mysql_query("Select * FROM package_holidays where destination='$destination'");
                    
@@ -113,22 +135,22 @@ $destination=$_GET['destination'];
                                     </div>
                                     <div class="col-md-5" style="padding-top: 15px;">
                                         
-                                        <h5 class="booking-item-title"><b><?php echo $row['pname']; ?> (<?php echo $row['days']; ?>D/<?php echo $row['nights']; ?>N)</b></h5>
+                                        <h5 class="booking-item-title"><b><%=rsStPack1.getString("pname") %> (<%=rsStPack1.getString("days") %>D/<%=rsStPack1.getString("nights") %>N)</b></h5>
                                         <div class="booking-item-rating">
                                             <ul class="icon-group booking-item-rating-stars">
                                                 <li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li>
                                             </ul><span class="booking-item-rating-number"><b >3.7</b> of 5</span><small></small>
                                         </div>
-                                        <p class="booking-item-address"><i class="fa fa-map-marker"></i> <?php echo $qrydestination['destinations']; ?></p>
-                                        <p class="booking-item-description">Package Includes: <?php echo $row['package_includes']; ?></p>
+                                        <p class="booking-item-address"><i class="fa fa-map-marker"></i> <%=rsStPack2.getString("destinations") %></p>
+                                        <p class="booking-item-description">Package Includes: <%=rsStPack1.getString("package_includes") %></p>
                                     </div>
                                     <div class="col-md-3" style="padding-top: 15px;">
                                         
                                          <p><span class="booking-item-rating-number"><b >EMI</b> <small>starts from</small> &#8377;<?php echo $emi ?>*</span></p>
-                                        <p><span class="booking-item-price">&#8377;<?php echo $row['price']; ?></span><span>/pp*</span></p>
+                                        <p><span class="booking-item-price">&#8377;<%=rsStPack1.getString("price") %></span><span>/pp*</span></p>
                                         
-                                                 <p>        <a href="view-package.php?pid=<?php echo $row['package_id']; ?>"> <span class="btn btn-primary">View</span></a>  &nbsp;&nbsp;
-                                                         <a class="popup-text" href="#search-dialog<?php echo $row['package_id']; ?>" data-effect="mfp-zoom-out"><span class="btn btn-danger">Book</span></a>
+                                                 <p>        <a href="view-package.jsp?pid=<%=rsStPack1.getString("package_id") %>"> <span class="btn btn-primary">View</span></a>  &nbsp;&nbsp;
+                                                         <a class="popup-text" href="#search-dialog<%=rsStPack1.getString("package_id") %>" data-effect="mfp-zoom-out"><span class="btn btn-danger">Book</span></a>
                                     </p>
                                     </div>
                                 </div>
@@ -136,9 +158,9 @@ $destination=$_GET['destination'];
                         </li>
                         
                         <!---------Booking lightbox---------->
-                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<?php echo $row['package_id']; ?>">
-                                <h5>Book your selected package- <b> <?php echo $row['pname']; ?> (<?php echo $row['days']; ?>D/<?php echo $row['nights']; ?>N)</b></h5>
-                               <form action="package_booking.php" method="POST">
+                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<%=rsStPack1.getString("package_id") %>">
+                                <h5>Book your selected package- <b> <%=rsStPack1.getString("pname") %> (<%=rsStPack1.getString("days") %>D/<%=rsStPack1.getString("nights") %>N)</b></h5>
+                               <form action="package_booking.jsp" method="POST">
                                     <div class="input-daterange" data-date-format="MM d, D">
                                         <div class="row">
                                             <div class="col-md-12">
@@ -186,7 +208,7 @@ $destination=$_GET['destination'];
                                 </form>
                             </div>
                             <!---------Booking lightbox-end--------->
-                        <?php  }  ?>
+                        <%} %>
                        
                     </ul>
                     <div class="row">
@@ -203,8 +225,8 @@ $destination=$_GET['destination'];
             <div class="gap"></div>
         </div>
 
-
- <?php include("include/footer.php");?>
+<%@include file="include/footer.jsp" %>
+ 
     </div>
 </body>
 

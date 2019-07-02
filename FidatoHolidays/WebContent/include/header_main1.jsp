@@ -2,25 +2,8 @@
 <%@include file="config.jsp" %>
 <%@include file="../jdbc/connection.jsp" %>
 
-<head>
-	<script type="text/javascript">
-	
-			function validate(){
-				
-				var mailNum=document.getElementById("mailNum").value;
-				var reg = /^([A-Z a-z 0-9]+)@([A-Z a-z 0-9]+).([A-Z a-z]{2,4})$/;
-				
-				if(isNaN(mailNum.value))
-				
-			}
-	</script>
-</head>
- 
 
-
- <%@include file="head_css.jsp" %>
  <header id="main-header" style="background: navy;">
-
             <div class="header-top">
                 <div class="container">
                     <div class="row">
@@ -38,94 +21,56 @@
                             </form>
                            
                         </div>
-                                                           <%
+                        <%
 	String usr="";
 	String email="";
 	String login="";
 	String logout="";
-	String mbl=request.getParameter("mob");
-	//System.out.println("heaeder-"+mbl);
-	session.setAttribute("mb",mbl);
 	if(session.getAttribute("user_name")==null){
 		usr="GUEST";
-			
-	%>
-      
-		<div class="col-md-4">
-                            <div class="top-user-area clearfix">
-                                <ul class="top-user-area-list list list-horizontal list-border">
-                                    <li class="top-user-area-avatar">
-                                        <a href="">
-                                            <img class="origin round" src="assets/images/usericon.png" />Hi, <%=usr%></a>
-                                    </li>
-                                   <li><a class="popup-text" href="#signin" data-effect="mfp-zoom-out">Sign In/ Sign Up</a>
-                                    </li>
-                                    
-                                  
-                                </ul>
-                            </div>
-                        </div>
-                         <!---------Signin/Signup lightbox---------->
-                         <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="signin" style="padding: 0px; background: #0083c0;">
-                        
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        
-                                        
-                                    </div>
-                                   
-                                    
-                                     <form action="auth/mob_otp.jsp" method="POST">
-                                        <div class="input-daterange" data-date-format="MM d, D">
-                                            <div class="col-md-6 text-center"  style="padding: 20px; background: #fff;">
-                                            <img class="origin round" src="assets/images/usericon.png"  style="width:25%;"/>
-                                               <h4>Sign In/ Sign Up</h4>
-                                                <br>
-                                                
-                                                <div class="form-group form-group-lg">
-                                                    <label  class="text-left">Email ID / Mobile Number</label>
-                                                    <input class="form-control" type="text" placeholder="Enter Your Email ID / Mobile Number" name="mobile1" required="required" id="mailNum">
-                                                </div>
-                                                <button class="btn btn-primary btn-block btn-lg" type="submit">CONTINUE</button>
-                                                <p  class="text-left">By proceeding, you agree with our <a href="#">Terms of Service</a></p>
-                                                
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
-                                    
-                                </form>
-                            </div>
-                            <!---------Signin/Signup lightbox-end--------->
-<%		
+		
 	}	
 	else{
-		usr=session.getAttribute("user_name").toString(); 
-		
-				%>
-				
-		<div class="col-md-4">
-                            <div class="top-user-area clearfix">
-                                <ul class="top-user-area-list list list-horizontal list-border">
-                                    <li class="top-user-area-avatar">
-                                        <a href="#">
-                                            <img class="origin round" src="assets/images/usericon.png" />Hi, <%=usr%></a>
-                                    </li>
-                                    <li> <a href="./user-profile.jsp?mbl=<%=mbl%>">My Profile</li>
-                                    <li><a href="auth/logout.jsp">Sign Out</a>
-                                    </li>
-                                    
-                                  
-                                </ul>
-                            </div>
-                        </div>
-<%	}
+		usr=session.getAttribute("user_name").toString();
+	}
 			
 	%>
+
 	
 	
 
-                        
+                        <div class="col-md-4">
+                            <div class="top-user-area clearfix">
+                                <ul class="top-user-area-list list list-horizontal list-border">
+                                    <li class="top-user-area-avatar">
+                                        <a href="auth/retrive.jsp">
+                                            <img class="origin round" src="assets/images/usericon.png" /><%=usr%></a>
+                                    </li>
+                                    <li> <a href="user-profile.jsp">My Profile</li>
+                                    
+                                    	<%
+										if(session.getAttribute("user_name")==null){
+											login="log_reg.jsp" ;	
+											%>
+                                    <li><a href="<%=login%>">Register/Login</a>
+                                    <% 
+                                    }
+                                    
+                                    else{
+										usr=session.getAttribute("user_name").toString();
+										login="auth/logout.jsp";
+										%>
+										<li><a href="<%=login%>">Logout</a>
+										<% 
+											}
+	
+										%>
+                                    </li>
+                                    
+                                  
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -138,7 +83,7 @@
                             
                             	<%
                             	String domstHol="";
-                            		PreparedStatement ps1=con.prepareStatement("SELECT STATE_CITY FROM package_holidays WHERE DESTINATION_TYPE='Domestic' GROUP BY STATE_CITY");
+                            		PreparedStatement ps1=con.prepareStatement("SELECT STATE_CITY FROM PACKAGE_HOLIDAYS WHERE DESTINATION_TYPE='Domestic' GROUP BY STATE_CITY");
                             		ResultSet rs1=ps1.executeQuery();
                             		 while(rs1.next()){
                             			domstHol=rs1.getString(1);
@@ -156,7 +101,7 @@
                             <ul>
                             
                             	<%
-                            		PreparedStatement ps2=con.prepareStatement("SELECT STATE_CITY FROM package_holidays WHERE DESTINATION_TYPE='International' GROUP BY STATE_CITY");
+                            		PreparedStatement ps2=con.prepareStatement("SELECT STATE_CITY FROM PACKAGE_HOLIDAYS WHERE DESTINATION_TYPE='International' GROUP BY STATE_CITY");
                             		ResultSet rs2=ps2.executeQuery();
                             		 while(rs2.next()){
                             		
@@ -173,7 +118,7 @@
                             <ul>
                             
                             	<%
-                            		PreparedStatement ps3=con.prepareStatement("SELECT pcategory FROM package_holidays GROUP BY pcategory");
+                            		PreparedStatement ps3=con.prepareStatement("SELECT pcategory FROM PACKAGE_HOLIDAYS GROUP BY pcategory");
                             		ResultSet rs3=ps3.executeQuery();
                             		 while(rs3.next()){
                             		
@@ -187,7 +132,7 @@
                             <ul>
                             	
                             	<%
-                            		PreparedStatement ps4=con.prepareStatement("SELECT destination FROM package_holidays GROUP BY destination limit 10");
+                            		PreparedStatement ps4=con.prepareStatement("SELECT destination FROM PACKAGE_HOLIDAYS GROUP BY destination limit 10");
                             		ResultSet rs4=ps4.executeQuery();
                             		 while(rs4.next()){
                             			 String destn=rs4.getString(1);

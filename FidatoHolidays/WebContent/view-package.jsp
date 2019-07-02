@@ -79,7 +79,7 @@
                         <!---------Booking lightbox---------->
                          <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="search-dialog<%=rs7.getString("package_id") %>">
                                 <h5>Book your selected package- <b> <%=rs7.getString("pname") %> (<%=rs7.getString("days") %>D/<%=rs7.getString("nights") %>N)</b></h5>
-                                <form action="success-payment.jsp" method="POST">
+                                <form action="package_booking.jsp" method="POST">
                                     <div class="input-daterange" data-date-format="MM d, D">
                                         <div class="row">
                                             <div class="col-md-12">

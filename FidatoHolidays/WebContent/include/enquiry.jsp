@@ -5,7 +5,7 @@
                         <div class="col-md-6 text-right">
                             <div class="mfp-with-anim mfp-hide mfp-dialog mfp-search-dialog" id="package-enquiry">
                                 <h3>Write us your need</h3>
-                                <form action="user_enquiry.php" method="POST">
+                                <form action="user_enquiry.jsp" method="POST">
                                     <div class="input-daterange" data-date-format="MM d, D">
                                         <div class="row">
                                             <div class="col-md-12">
